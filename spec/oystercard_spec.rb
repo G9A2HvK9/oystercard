@@ -26,7 +26,7 @@ describe Oystercard do
       end
     end
     context "when top_up(amount) is equal to default" do
-      it "should keep the balance the same" do
+      it "should not change the balance" do
         expect { subject.top_up }.to_not change{ subject.balance }
       end
     end
@@ -39,6 +39,20 @@ describe Oystercard do
       it "should raise an error" do
         subject.top_up(::MAX_BALANCE)
         expect{ subject.top_up(1) }.to raise_error "Your balance cannot exceed #{MAX_BALANCE}. Your current balance is #{subject.balance}"
+      end
+    end
+  end
+
+  describe ".deduct(amount)" do
+    it { is_expected.to respond_to(:deduct).with(1).argument }
+    context "when deduct(amount) is equal to 5" do
+      it "should decrease balance by 5" do
+        expect{ subject.deduct(5) }.to change{ subject.balance }.by(-5)
+      end
+    end
+    context "when deduct(amount) is equal to default" do
+      it "should not change the balance" do
+        expect{ subject.deduct }.to_not change{ subject.balance }
       end
     end
   end
