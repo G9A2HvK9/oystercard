@@ -30,6 +30,17 @@ describe Oystercard do
         expect { subject.top_up }.to_not change{ subject.balance }
       end
     end
+    context "when balance is 0 and you top up 91" do
+      it "should raise an error" do
+        expect{ subject.top_up(91) }.to raise_error "Your balance cannot exceed #{MAX_BALANCE}. Your current balance is #{subject.balance}"
+      end
+    end
+    context "when balance is #{MAX_BALANCE} and you top up by 1" do
+      it "should raise an error" do
+        subject.top_up(::MAX_BALANCE)
+        expect{ subject.top_up(1) }.to raise_error "Your balance cannot exceed #{MAX_BALANCE}. Your current balance is #{subject.balance}"
+      end
+    end
   end
 
   #describe ".add_money" do

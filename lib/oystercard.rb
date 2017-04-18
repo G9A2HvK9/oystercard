@@ -1,3 +1,5 @@
+require_relative "parameters"
+
 class Oystercard
 attr_reader :balance
 
@@ -6,6 +8,7 @@ attr_reader :balance
   end
 
   def top_up(amount = 0)
+    raise "Your balance cannot exceed #{MAX_BALANCE}. Your current balance is #{@balance}" if @balance + amount > MAX_BALANCE
     @balance += amount
   end
 
