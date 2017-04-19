@@ -6,12 +6,15 @@ describe Oystercard do
     it "should be an instance of the Oystercard class" do
       expect(subject).to be_a Oystercard
     end
-    context "when balance is left as the default value" do
+    it "should have two attributes known as :balance and :in_transit" do
+      expect(Oystercard.new).to have_attributes(:balance => 0, :in_transit => false)
+    end
+    context "when balance attribute is left as the default value" do
       it "should have a balance of 0" do
-        expect(Oystercard.new(0)).to have_attributes(:balance => 0)
+        expect(Oystercard.new).to have_attributes(:balance => 0)
       end
     end
-    context "when balance is made to equal 20" do
+    context "when balance attribute is made to equal 20" do
       it "should have a balance of 20" do
         expect(Oystercard.new(20)).to have_attributes(:balance => 20)
       end
@@ -35,7 +38,7 @@ describe Oystercard do
         expect{ subject.top_up(91) }.to raise_error "Your balance cannot exceed #{MAX_BALANCE}. Your current balance is #{subject.balance}"
       end
     end
-    context "when balance is #{MAX_BALANCE} and you top up by 1" do
+    context "when balance is MAX_BALANCE (#{MAX_BALANCE}) and you top up by 1" do
       it "should raise an error" do
         subject.top_up(::MAX_BALANCE)
         expect{ subject.top_up(1) }.to raise_error "Your balance cannot exceed #{MAX_BALANCE}. Your current balance is #{subject.balance}"
@@ -53,6 +56,31 @@ describe Oystercard do
     context "when deduct(amount) is equal to default" do
       it "should not change the balance" do
         expect{ subject.deduct }.to_not change{ subject.balance }
+      end
+    end
+  end
+
+  describe ".touch_in" do
+    it { is_expected.to respond_to(:touch_in) }
+    context "when @in_transit is equal to false" do
+      it "changes the value of @in_transit from false to true" do
+        expect{ subject.touch_in }.to change{ subject.in_transit }.from(false).to(true)
+      end
+    end
+    context "when @in_transit is equal to true" do
+      it "raises an error message" do
+        subject.touch_in
+        expect{ subject.touch_in }.to raise_error("You are already in transit; please touch out before beginning a new journey.")
+      end
+    end
+  end
+
+  describe ".touch_out" do
+    it { is_expected.to respond_to(:touch_out) }
+    context "when @in_transit is equal to true" do
+      it "changes the value of @in_transit from true to false" do
+          subject.touch_in
+          expect{subject.touch_out}.to change{ subject.in_transit }.from(true).to(false)
       end
     end
   end
