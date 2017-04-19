@@ -24,6 +24,7 @@ attr_reader :balance, :in_transit
   end
 
   def touch_out
+    deduct(MIN_FARE) unless @in_transit == false
     @in_transit = false
   end
 

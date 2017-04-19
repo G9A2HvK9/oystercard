@@ -87,9 +87,22 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_out) }
     context "when @in_transit is equal to true" do
       it "changes the value of @in_transit from true to false" do
-          subject.top_up(::MIN_BALANCE)
-          subject.touch_in
-          expect{subject.touch_out}.to change{ subject.in_transit }.from(true).to(false)
+        subject.top_up(::MIN_BALANCE)
+        subject.touch_in
+        expect{subject.touch_out}.to change{ subject.in_transit }.from(true).to(false)
+      end
+    end
+    context "when @in_transit is equal to true" do
+      it "decrease the @balance on the card by #{MIN_FARE}" do
+        subject.top_up(::MIN_FARE + ::MIN_BALANCE)
+        subject.touch_in
+        expect{ subject.touch_out }.to change{ subject.balance }.by(-::MIN_FARE)
+      end
+    end
+    context "when @in_transit is equal to false" do
+      it "should not change the value of balance" do
+        subject.top_up(::MIN_FARE + ::MIN_BALANCE)
+        expect{ subject.touch_out }.not_to change{ subject.balance }
       end
     end
   end
