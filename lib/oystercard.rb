@@ -1,10 +1,13 @@
+
 require_relative "parameters"
 
 class Oystercard
-attr_reader :balance, :journey_start, :journey_end # <-- CHANGE!
+attr_reader :balance, :journey_start, :journey_end, :current_journey, :journey_history
 
   def initialize(balance = 0)
     @balance = balance
+    @current_journey = {}
+    @journey_history = []
   end
 
   def top_up(amount = 0)
@@ -21,11 +24,14 @@ attr_reader :balance, :journey_start, :journey_end # <-- CHANGE!
     raise "You don't have sufficient funds. Please top up your card." if @balance < MIN_BALANCE
     @journey_end = nil
     @journey_start = journey_start
+    @current_journey[:Entry_Station] = @journey_start
   end
 
   def touch_out(journey_end = nil)
     deduct(MIN_FARE) if in_transit?
     @journey_end = journey_end
+    @current_journey[:Exit_station] = @journey_end
+    @journey_history << @current_journey.dup
     @journey_start = nil
   end
 

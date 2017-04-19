@@ -88,6 +88,11 @@ describe Oystercard do
         subject.touch_in("Aldgate")
         expect( subject.journey_start ).to eq("Aldgate")
       end
+      it "records Aldgate as entry station" do
+        subject.top_up(::MIN_BALANCE + ::MIN_FARE)
+        subject.touch_in("Aldgate")
+        expect(subject.current_journey[:Entry_Station]).to eq "Aldgate"
+      end
     end
   end
 
@@ -118,6 +123,20 @@ describe Oystercard do
       it "let's journey_end equal Aldgate" do
         subject.touch_out("Aldgate")
         expect( subject.journey_end ).to eq("Aldgate")
+      end
+      it "records Aldgate as exit station" do
+        subject.top_up(::MIN_BALANCE + ::MIN_FARE)
+        subject.touch_in("East")
+        subject.touch_out("Aldgate")
+        expect(subject.current_journey[:Exit_station]).to eq "Aldgate"
+      end
+    end
+    context "when touching in at 'East' and touching out at 'West'" do
+      it "records whole journey to journey_history" do
+        subject.top_up(::MIN_BALANCE + ::MIN_FARE)
+        subject.touch_in("East")
+        subject.touch_out("West")
+        expect(subject.journey_history).to include({:Entry_Station => "East", :Exit_station => "West"})
       end
     end
   end
