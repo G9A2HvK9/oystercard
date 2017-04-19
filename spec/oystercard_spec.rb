@@ -64,13 +64,21 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_in) }
     context "when @in_transit is equal to false" do
       it "changes the value of @in_transit from false to true" do
+        subject.top_up(::MIN_BALANCE)
         expect{ subject.touch_in }.to change{ subject.in_transit }.from(false).to(true)
       end
     end
     context "when @in_transit is equal to true" do
       it "raises an error message" do
+        subject.top_up(::MIN_BALANCE)
         subject.touch_in
         expect{ subject.touch_in }.to raise_error("You are already in transit; please touch out before beginning a new journey.")
+      end
+    end
+    context "when @balance is less than #{MIN_BALANCE}" do
+      it "raises an error message" do
+        subject.top_up(::MIN_BALANCE - 0.01)
+        expect{ subject.touch_in }.to raise_error "You don't have sufficient funds. Please top up your card."
       end
     end
   end
@@ -79,6 +87,7 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_out) }
     context "when @in_transit is equal to true" do
       it "changes the value of @in_transit from true to false" do
+          subject.top_up(::MIN_BALANCE)
           subject.touch_in
           expect{subject.touch_out}.to change{ subject.in_transit }.from(true).to(false)
       end

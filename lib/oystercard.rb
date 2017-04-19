@@ -19,6 +19,7 @@ attr_reader :balance, :in_transit
 
   def touch_in
     raise "You are already in transit; please touch out before beginning a new journey." if @in_transit == true
+    raise "You don't have sufficient funds. Please top up your card." if @balance < MIN_BALANCE
     @in_transit = true
   end
 
